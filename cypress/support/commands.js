@@ -28,6 +28,68 @@
 
 import '@4tw/cypress-drag-drop';
 
+/**
+ * Custom Chai assertion: closeToPx
+ *
+ * Compares a CSS pixel string (e.g. "105.77px") against an expected
+ * value with a configurable tolerance (default 1.5px).  This avoids
+ * cross-browser failures caused by sub-pixel rounding differences
+ * between Electron, Chrome, and Edge.
+ *
+ * Usage:
+ *   cy.get(el).should('have.cssCloseTo', 'top', 105.77, 1.5)
+ *   cy.get(el).should('have.attrCloseTo', 'width', 255, 1.5)
+ */
+const DEFAULT_TOLERANCE = 1.5;
+
+function parsePx(value) {
+  return parseFloat(String(value).replace('px', ''));
+}
+
+chai.Assertion.addMethod('cssCloseTo', function (prop, expected, tol) {
+  const tolerance = tol !== undefined ? tol : DEFAULT_TOLERANCE;
+  const elem = this._obj[0] || this._obj;
+  const raw = elem.ownerDocument.defaultView
+    .getComputedStyle(elem)
+    .getPropertyValue(prop);
+  const actual = parsePx(raw);
+  this.assert(
+    Math.abs(actual - expected) <= tolerance,
+    'expected #{this} CSS ' +
+      prop +
+      ' #{exp} but got #{act} ' +
+      '(tolerance ' +
+      tolerance +
+      'px)',
+    'expected #{this} CSS ' +
+      prop +
+      ' to not be close to #{exp}',
+    expected + 'px',
+    actual + 'px'
+  );
+});
+
+chai.Assertion.addMethod('attrCloseTo', function (attr, expected, tol) {
+  const tolerance = tol !== undefined ? tol : DEFAULT_TOLERANCE;
+  const elem = this._obj[0] || this._obj;
+  const raw = elem.getAttribute(attr);
+  const actual = parsePx(raw);
+  this.assert(
+    Math.abs(actual - expected) <= tolerance,
+    'expected #{this} attr ' +
+      attr +
+      ' #{exp} but got #{act} ' +
+      '(tolerance ' +
+      tolerance +
+      'px)',
+    'expected #{this} attr ' +
+      attr +
+      ' to not be close to #{exp}',
+    expected + 'px',
+    actual + 'px'
+  );
+});
+
 Cypress.Commands.add('run', (name, opts) => {
   var saveto = (opts && "env" in opts) ? opts["env"] : name + "_" + Cypress._.random(0, 1e6);
   var argscli = (opts && "args" in opts) ? (' -arg '+opts["args"].join(' ')) : '';

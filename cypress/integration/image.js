@@ -35,12 +35,14 @@ describe('Image Pane', () => {
       .wait(100);
 
     // check new position
-    cy.get(container_selector)
-      .should('have.css', 'top', `${moveY}px`)
-      .should('have.css', 'left', `${moveX}px`);
-    cy.get(img_selector)
-      .should('have.attr', 'width', `${imgWidth}px`)
-      .should('have.attr', 'height', `${imgHeight}px`);
+    cy.get(container_selector).then(($el) => {
+      expect($el).to.have.cssCloseTo('top', moveY);
+      expect($el).to.have.cssCloseTo('left', moveX);
+    });
+    cy.get(img_selector).then(($el) => {
+      expect($el).to.have.attrCloseTo('width', imgWidth);
+      expect($el).to.have.attrCloseTo('height', imgHeight);
+    });
 
     // drag again
     cy.get(img_selector)
@@ -52,12 +54,14 @@ describe('Image Pane', () => {
       .wait(100);
 
     // check new position
-    cy.get(container_selector)
-      .should('have.css', 'top', `${2 * moveY}px`)
-      .should('have.css', 'left', `${2 * moveX}px`);
-    cy.get(img_selector)
-      .should('have.attr', 'width', `${imgWidth}px`)
-      .should('have.attr', 'height', `${imgHeight}px`);
+    cy.get(container_selector).then(($el) => {
+      expect($el).to.have.cssCloseTo('top', 2 * moveY);
+      expect($el).to.have.cssCloseTo('left', 2 * moveX);
+    });
+    cy.get(img_selector).then(($el) => {
+      expect($el).to.have.attrCloseTo('width', imgWidth);
+      expect($el).to.have.attrCloseTo('height', imgHeight);
+    });
   });
 
   it('Image Reset (Double-Click)', () => {
@@ -68,9 +72,10 @@ describe('Image Pane', () => {
     cy.get(container_selector)
       .should('have.css', 'top', '0px')
       .should('have.css', 'left', '0px');
-    cy.get(img_selector)
-      .should('have.attr', 'width', `${imgWidth}px`)
-      .should('have.attr', 'height', `${imgHeight}px`);
+    cy.get(img_selector).then(($el) => {
+      expect($el).to.have.attrCloseTo('width', imgWidth);
+      expect($el).to.have.attrCloseTo('height', imgHeight);
+    });
   });
 
   it('Image Zoom From Image Corner (Ctrl + Wheel)', () => {
@@ -112,14 +117,18 @@ describe('Image Pane', () => {
         clientX: 0,
         clientY: 0,
       })
-      .should('have.attr', 'width', '156px')
-      .should('have.attr', 'height', '312px');
+      .then(($el) => {
+        expect($el).to.have.attrCloseTo('width', 156);
+        expect($el).to.have.attrCloseTo('height', 312);
+      });
 
     // check new position
     cy.get(container_selector)
       .first()
-      .should('have.css', 'top', '-32.658px')
-      .should('have.css', 'left', '-3.93469px');
+      .then(($el) => {
+        expect($el).to.have.cssCloseTo('top', -32.658);
+        expect($el).to.have.cssCloseTo('left', -3.93469);
+      });
   });
 
   it('Image Zoom From Image Center (Ctrl + Wheel)', () => {
@@ -134,14 +143,18 @@ describe('Image Pane', () => {
       .trigger('wheel', { ctrlKey: true, deltaY: 200, bubbles: true })
       .trigger('wheel', { ctrlKey: true, deltaY: 200, bubbles: true })
       .trigger('wheel', { ctrlKey: true, deltaY: 200, bubbles: true })
-      .should('have.attr', 'width', '156px')
-      .should('have.attr', 'height', '312px');
+      .then(($el) => {
+        expect($el).to.have.attrCloseTo('width', 156);
+        expect($el).to.have.attrCloseTo('height', 312);
+      });
 
     // check new position
     cy.get(container_selector)
       .first()
-      .should('have.css', 'top', '105.77px')
-      .should('have.css', 'left', '49.9706px');
+      .then(($el) => {
+        expect($el).to.have.cssCloseTo('top', 105.77);
+        expect($el).to.have.cssCloseTo('left', 49.9706);
+      });
   });
 
   it('Image Move & Zoom', () => {
@@ -166,11 +179,14 @@ describe('Image Pane', () => {
     // check new position
     cy.get(container_selector)
       .first()
-      .should('have.css', 'top', '105.77px')
-      .should('have.css', 'left', '49.9706px');
-    cy.get(img_selector)
-      .should('have.attr', 'width', '156px')
-      .should('have.attr', 'height', '312px');
+      .then(($el) => {
+        expect($el).to.have.cssCloseTo('top', 105.77);
+        expect($el).to.have.cssCloseTo('left', 49.9706);
+      });
+    cy.get(img_selector).then(($el) => {
+      expect($el).to.have.attrCloseTo('width', 156);
+      expect($el).to.have.attrCloseTo('height', 312);
+    });
 
     // now drag as well
     cy.get(img_selector)
@@ -184,11 +200,14 @@ describe('Image Pane', () => {
     // check new position
     cy.get(container_selector)
       .first()
-      .should('have.css', 'top', `139.77px`)
-      .should('have.css', 'left', '61.9706px');
-    cy.get(img_selector)
-      .should('have.attr', 'width', '156px')
-      .should('have.attr', 'height', '312px');
+      .then(($el) => {
+        expect($el).to.have.cssCloseTo('top', 139.77);
+        expect($el).to.have.cssCloseTo('left', 61.9706);
+      });
+    cy.get(img_selector).then(($el) => {
+      expect($el).to.have.attrCloseTo('width', 156);
+      expect($el).to.have.attrCloseTo('height', 312);
+    });
   });
 
   it('image_basic download', () => {
@@ -251,8 +270,10 @@ describe('Image Pane', () => {
     cy.run('image_grid', { asyncrun: true });
     cy.get(img_selector)
       .should('have.length', 1)
-      .should('have.attr', 'width', '543px')
-      .should('have.attr', 'height', '204px');
+      .then(($el) => {
+        expect($el).to.have.attrCloseTo('width', 543);
+        expect($el).to.have.attrCloseTo('height', 204);
+      });
   });
 
   it('image_svg', () => {
